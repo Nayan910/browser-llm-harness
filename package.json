@@ -1,0 +1,22 @@
+{
+  "name": "browser-llm-harness",
+  "version": "0.1.0-alpha",
+  "private": true,
+  "description": "Browser-native LLM harness with autonomous agent orchestration",
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "lint": "turbo lint",
+    "clean": "turbo clean",
+    "test": "turbo test"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "turbo": "^2.0.0",
+    "typescript": "^5.5.0"
+  },
+  "packageManager": "pnpm@9.0.0",
+  "engines": {
+    "node": ">=20"
+  }
+}
