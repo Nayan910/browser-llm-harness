@@ -1,0 +1,146 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://bsp.bobnet.io/schemas/memory-query-v2.0.json",
+  "title": "BSP Memory Query Protocol",
+  "description": "Protocol for querying agent memories across the BobNet — supports semantic search, privacy levels, and cross-agent retrieval.",
+  "definitions": {
+    "memoryQueryRequest": {
+      "type": "object",
+      "required": ["query"],
+      "properties": {
+        "query": {
+          "type": "object",
+          "required": ["text"],
+          "properties": {
+            "text": {
+              "type": "string",
+              "description": "Natural language query text."
+            },
+            "embedding": {
+              "type": "array",
+              "description": "Pre-computed embedding vector for semantic search.",
+              "items": {"type": "number"}
+            },
+            "hybrid": {
+              "type": "boolean",
+              "description": "Whether to use hybrid (keyword + semantic) search.",
+              "default": false
+            },
+            "filters": {
+              "type": "object",
+              "description": "Key-value filters for exact matching.",
+              "additionalProperties": true
+            }
+          }
+        },
+        "scope": {
+          "type": "object",
+          "description": "Query scope — which agents and memory tiers to search.",
+          "properties": {
+            "agents": {
+              "type": "array",
+              "description": "Specific agent identifiers to query. Empty = all reachable.",
+              "items": {"type": "string"}
+            },
+            "privacyLevels": {
+              "type": "array",
+              "description": "Privacy levels to include.",
+              "items": {
+                "type": "string",
+                "enum": ["public", "shared", "private"]
+              },
+              "default": ["public", "shared"]
+            },
+            "maxAge": {
+              "type": "integer",
+              "description": "Maximum age of memories in seconds.",
+              "minimum": 0
+            },
+            "domains": {
+              "type": "array",
+              "description": "Domain/category filters.",
+              "items": {"type": "string"}
+            }
+          }
+        },
+        "maxResults": {
+          "type": "integer",
+          "description": "Maximum number of results to return.",
+          "minimum": 1,
+          "maximum": 100,
+          "default": 10
+        },
+        "minRelevance": {
+          "type": "number",
+          "description": "Minimum relevance score threshold (0.0 to 1.0).",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 0.5
+        }
+      }
+    },
+    "memoryQueryResponse": {
+      "type": "object",
+      "required": ["results"],
+      "properties": {
+        "results": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/memoryResult"
+          }
+        },
+        "totalResults": {
+          "type": "integer",
+          "description": "Total matching results (may exceed maxResults)."
+        },
+        "queryTime": {
+          "type": "number",
+          "description": "Query execution time in milliseconds."
+        }
+      }
+    },
+    "memoryResult": {
+      "type": "object",
+      "required": ["id", "content", "relevance", "source"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Memory identifier."
+        },
+        "content": {
+          "type": "object",
+          "description": "Memory content.",
+          "properties": {
+            "text": {"type": "string"},
+            "metadata": {"type": "object"}
+          }
+        },
+        "relevance": {
+          "type": "number",
+          "description": "Relevance score (0.0 to 1.0).",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "source": {
+          "type": "object",
+          "description": "Source agent information.",
+          "properties": {
+            "agent": {"type": "string"},
+            "timestamp": {"type": "string", "format": "date-time"},
+            "domain": {"type": "string"},
+            "privacyLevel": {
+              "type": "string",
+              "enum": ["public", "shared", "private"]
+            }
+          },
+          "required": ["agent"]
+        },
+        "embedding": {
+          "type": "array",
+          "description": "Optional embedding vector for downstream processing.",
+          "items": {"type": "number"}
+        }
+      }
+    }
+  }
+}

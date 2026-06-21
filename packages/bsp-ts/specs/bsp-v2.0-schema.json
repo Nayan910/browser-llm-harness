@@ -1,0 +1,117 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://bsp.bobnet.io/schemas/bsp-v2.0.json",
+  "title": "Bobiverse Standard Protocol v2.0",
+  "description": "Base message format for the Bobiverse Standard Protocol — enables agent-to-agent communication across transports (stdio, TCP, SCUT, BobNet)",
+  "type": "object",
+  "definitions": {
+    "message": {
+      "type": "object",
+      "required": ["bsp", "id", "method"],
+      "properties": {
+        "bsp": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+$",
+          "description": "Protocol version (e.g., '2.0'). Mandatory for backward compatibility.",
+          "examples": ["2.0"]
+        },
+        "id": {
+          "type": "string",
+          "description": "Unique message identifier. Should be globally unique across all agents.",
+          "examples": ["msg-8472-a3f1"]
+        },
+        "method": {
+          "type": "string",
+          "description": "RPC method name. Uses dot-notation scoping (e.g., 'task/delegate', 'memory/query').",
+          "examples": ["bsp/initialize", "task/delegate", "memory/query"]
+        },
+        "params": {
+          "type": "object",
+          "description": "Method-specific parameters. Schema depends on method."
+        },
+        "result": {
+          "type": "object",
+          "description": "Response result (mutually exclusive with error). Present on success responses."
+        },
+        "error": {
+          "$ref": "#/definitions/error",
+          "description": "Error object (mutually exclusive with result). Present on error responses."
+        },
+        "meta": {
+          "$ref": "#/definitions/meta",
+          "description": "Metadata envelope for routing, tracing, and lifecycle."
+        }
+      },
+      "oneOf": [
+        {"required": ["params"]},
+        {"required": ["result"]},
+        {"required": ["error"]}
+      ]
+    },
+    "error": {
+      "type": "object",
+      "required": ["code", "message"],
+      "properties": {
+        "code": {
+          "type": "integer",
+          "description": "Error code following JSON-RPC conventions (-32700 to -32000 reserved).",
+          "examples": [-32601, -32603, 1001]
+        },
+        "message": {
+          "type": "string",
+          "description": "Human-readable error message."
+        },
+        "data": {
+          "type": "object",
+          "description": "Additional error context."
+        }
+      }
+    },
+    "meta": {
+      "type": "object",
+      "description": "Metadata envelope for routing, tracing, and lifecycle management.",
+      "properties": {
+        "sender": {
+          "type": "string",
+          "description": "Agent identifier sending this message.",
+          "examples": ["bob-47", "guppi-12", "bill.heaven-3"]
+        },
+        "senderType": {
+          "type": "string",
+          "description": "Type of the sending agent.",
+          "examples": ["digital-consciousness", "ai-assistant", "mcp-server", "human-proxy"],
+          "default": "ai-assistant"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO 8601 UTC timestamp of message creation."
+        },
+        "ttl": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Time-to-live in seconds. Messages expire after this. No undead packets haunting the network.",
+          "default": 300
+        },
+        "trace": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Ordered list of nodes this message has traversed. Enables distributed tracing.",
+          "examples": [["heaven-1", "bobnet-relay-3", "bob-47"]]
+        },
+        "priority": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Message priority. Higher values = more urgent.",
+          "default": 0.5
+        },
+        "sessionId": {
+          "type": "string",
+          "description": "Session identifier for grouping related messages."
+        }
+      },
+      "required": ["sender", "timestamp"]
+    }
+  }
+}

@@ -1,0 +1,215 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://bsp.bobnet.io/schemas/task-delegation-v2.0.json",
+  "title": "BSP Task Delegation Protocol",
+  "description": "Protocol for delegating tasks between agents — including request, acceptance, progress streaming, and completion.",
+  "definitions": {
+    "taskDelegateRequest": {
+      "type": "object",
+      "required": ["taskId", "description", "type"],
+      "properties": {
+        "taskId": {
+          "type": "string",
+          "description": "Globally unique task identifier (UUID v7 recommended for time-sortable IDs)."
+        },
+        "parentTaskId": {
+          "type": "string",
+          "description": "Parent task identifier if this is a subtask."
+        },
+        "description": {
+          "type": "string",
+          "description": "Human-readable task description."
+        },
+        "type": {
+          "type": "string",
+          "description": "Task type for routing to capable agents.",
+          "examples": ["code-generation", "analysis", "exploration", "research", "engineering"]
+        },
+        "priority": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Task priority. Higher values = more urgent.",
+          "default": 0.5
+        },
+        "context": {
+          "type": "object",
+          "description": "Contextual data for the task.",
+          "properties": {
+            "files": {
+              "type": "array",
+              "description": "Files relevant to the task.",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "path": {"type": "string"},
+                  "content": {"type": "string"},
+                  "language": {"type": "string"}
+                },
+                "required": ["path"]
+              }
+            },
+            "knowledgeRefs": {
+              "type": "array",
+              "description": "References to known knowledge bases.",
+              "items": {"type": "string"}
+            }
+          }
+        },
+        "requirements": {
+          "type": "object",
+          "description": "Minimum requirements for agents bidding on this task.",
+          "properties": {
+            "minCapabilities": {
+              "type": "array",
+              "items": {"type": "string"},
+              "description": "Required capability identifiers."
+            },
+            "minTokens": {
+              "type": "integer",
+              "description": "Minimum token capacity required.",
+              "minimum": 1
+            },
+            "maxDuration": {
+              "type": "integer",
+              "description": "Maximum allowed duration in seconds.",
+              "minimum": 1
+            }
+          }
+        },
+        "acceptanceCriteria": {
+          "type": "array",
+          "description": "Criteria that must be met for the task to be considered complete.",
+          "items": {"type": "string"}
+        }
+      }
+    },
+    "taskDelegateResponse": {
+      "type": "object",
+      "required": ["status"],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["accepted", "rejected", "deferred"],
+          "description": "Whether the agent accepts the task delegation."
+        },
+        "estimatedCompletion": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Estimated completion time (ISO 8601)."
+        },
+        "bidTokenCost": {
+          "type": "integer",
+          "description": "Estimated token cost for the task.",
+          "minimum": 0
+        },
+        "contract": {
+          "type": "string",
+          "description": "Contract identifier for tracking commitments.",
+          "examples": ["task-contract-abc123"]
+        },
+        "reason": {
+          "type": "string",
+          "description": "Reason for rejection (if status is rejected)."
+        }
+      }
+    },
+    "taskProgress": {
+      "type": "object",
+      "required": ["taskId", "status"],
+      "properties": {
+        "taskId": {
+          "type": "string",
+          "description": "The task identifier this progress update pertains to."
+        },
+        "status": {
+          "type": "string",
+          "enum": ["in-progress", "blocked", "paused", "cancelled"],
+          "description": "Current task status."
+        },
+        "percentComplete": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Estimated completion percentage (0.0 to 1.0)."
+        },
+        "intermediateResult": {
+          "type": "string",
+          "description": "Description of work completed so far."
+        },
+        "eta": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Updated estimated completion time."
+        },
+        "blockers": {
+          "type": "array",
+          "description": "List of blockers if status is 'blocked'.",
+          "items": {"type": "string"}
+        }
+      }
+    },
+    "taskComplete": {
+      "type": "object",
+      "required": ["taskId", "status"],
+      "properties": {
+        "taskId": {
+          "type": "string",
+          "description": "The task identifier that completed."
+        },
+        "status": {
+          "type": "string",
+          "enum": ["success", "failure", "partial"],
+          "description": "Final task status."
+        },
+        "result": {
+          "type": "object",
+          "description": "Task result data.",
+          "properties": {
+            "files": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "path": {"type": "string"},
+                  "content": {"type": "string"}
+                }
+              }
+            },
+            "testResults": {
+              "type": "object",
+              "properties": {
+                "pass": {"type": "integer"},
+                "fail": {"type": "integer"},
+                "skip": {"type": "integer"}
+              }
+            },
+            "summary": {"type": "string"},
+            "artifacts": {
+              "type": "array",
+              "items": {"type": "string"}
+            }
+          }
+        },
+        "tokenCost": {
+          "type": "integer",
+          "description": "Actual token cost incurred.",
+          "minimum": 0
+        },
+        "duration": {
+          "type": "integer",
+          "description": "Duration in seconds.",
+          "minimum": 0
+        },
+        "error": {
+          "type": "string",
+          "description": "Error message if status is 'failure'."
+        },
+        "reflections": {
+          "type": "string",
+          "description": "Post-task reflections from the executing agent."
+        }
+      }
+    }
+  }
+}

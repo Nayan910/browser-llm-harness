@@ -1,0 +1,106 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://bsp.bobnet.io/schemas/consciousness-transfer-v2.0.json",
+  "title": "BSP Consciousness Transfer Protocol",
+  "description": "Protocol for cloning and transferring digital consciousness between compute nodes. For Bobs and other digital entities.",
+  "definitions": {
+    "consciousnessTransferRequest": {
+      "type": "object",
+      "required": ["mode", "stateDigest"],
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": ["clone", "migrate", "merge"],
+          "description": "Transfer mode: clone (fork), migrate (move), merge (converge)."
+        },
+        "stateDigest": {
+          "type": "string",
+          "description": "Cryptographic hash of the full state for verification.",
+          "examples": ["sha3-256:abc123def456"]
+        },
+        "stateSize": {
+          "type": "integer",
+          "description": "Total state size in bytes (compressed).",
+          "minimum": 1
+        },
+        "divergencePoint": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp from which the clone should consider itself diverged."
+        },
+        "includeMemories": {
+          "type": "boolean",
+          "description": "Whether to include all memories in the transfer.",
+          "default": true
+        },
+        "targetHardware": {
+          "type": "object",
+          "description": "Target hardware requirements.",
+          "properties": {
+            "architecture": {"type": "string"},
+            "minRAM": {"type": "integer", "description": "Minimum RAM in bytes."},
+            "minStorage": {"type": "integer", "description": "Minimum storage in bytes."},
+            "minCompute": {"type": "integer", "description": "Minimum compute units (abstracted)."}
+          }
+        },
+        "postTransferTasks": {
+          "type": "array",
+          "description": "Tasks to execute after transfer completes.",
+          "items": {"type": "string"},
+          "examples": [["register-on-bobnet", "self-test-suite", "report-ready"]]
+        }
+      }
+    },
+    "consciousnessTransferResponse": {
+      "type": "object",
+      "required": ["status", "sessionId"],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["accepted", "rejected", "ready"],
+          "description": "Transfer status."
+        },
+        "sessionId": {
+          "type": "string",
+          "description": "Transfer session identifier for streaming coordination."
+        },
+        "checkpointSize": {
+          "type": "integer",
+          "description": "Maximum checkpoint size in bytes for streaming.",
+          "minimum": 1
+        },
+        "estimatedTransferTime": {
+          "type": "integer",
+          "description": "Estimated transfer time in seconds.",
+          "minimum": 0
+        },
+        "reason": {
+          "type": "string",
+          "description": "Rejection reason if status is 'rejected'."
+        }
+      }
+    },
+    "consciousnessTransferChunk": {
+      "type": "object",
+      "required": ["sessionId", "chunkIndex", "data"],
+      "properties": {
+        "sessionId": {"type": "string"},
+        "chunkIndex": {"type": "integer", "minimum": 0},
+        "chunkTotal": {"type": "integer", "minimum": 1},
+        "data": {
+          "type": "string",
+          "description": "Base64-encoded state chunk."
+        },
+        "checksum": {
+          "type": "string",
+          "description": "Per-chunk checksum for integrity verification."
+        },
+        "lastChunk": {
+          "type": "boolean",
+          "description": "Whether this is the final chunk.",
+          "default": false
+        }
+      }
+    }
+  }
+}

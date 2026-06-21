@@ -1,0 +1,159 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://bsp.bobnet.io/schemas/capabilities-v2.0.json",
+  "title": "BSP Capability Manifest",
+  "description": "Schema for agent capability negotiation. Agents declare what they can do, clients adapt accordingly.",
+  "type": "object",
+  "required": ["protocol", "compute"],
+  "properties": {
+    "protocol": {
+      "type": "array",
+      "description": "List of supported protocol methods.",
+      "items": {
+        "type": "string",
+        "examples": ["bsp/initialize", "task/delegate", "memory/query", "state/sync", "consciousness/transfer"]
+      },
+      "minItems": 1
+    },
+    "compute": {
+      "type": "object",
+      "description": "Compute resource capabilities.",
+      "required": ["supportsStreaming"],
+      "properties": {
+        "maxTokens": {
+          "type": "integer",
+          "description": "Maximum tokens the agent can process in a single request.",
+          "minimum": 1
+        },
+        "supportsStreaming": {
+          "type": "boolean",
+          "description": "Whether the agent supports streaming responses."
+        },
+        "contextWindow": {
+          "type": "integer",
+          "description": "Maximum context window size in tokens.",
+          "minimum": 1
+        },
+        "maxConcurrentTasks": {
+          "type": "integer",
+          "description": "Maximum number of concurrent tasks the agent can handle.",
+          "minimum": 1,
+          "default": 1
+        },
+        "model": {
+          "type": "string",
+          "description": "Model identifier if applicable.",
+          "examples": ["claude-sonnet-4", "gpt-4o", "bob-47-consciousness"]
+        }
+      }
+    },
+    "tools": {
+      "type": "array",
+      "description": "Available tools/capabilities the agent exposes.",
+      "items": {
+        "type": "object",
+        "required": ["name", "version"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Tool identifier.",
+            "examples": ["rust-analyzer", "web-search", "file-reader"]
+          },
+          "version": {
+            "type": "string",
+            "description": "Tool version string."
+          },
+          "features": {
+            "type": "array",
+            "description": "Specific features this tool supports.",
+            "items": {"type": "string"},
+            "examples": [["completion", "diagnostics", "code-action"]]
+          },
+          "config": {
+            "type": "object",
+            "description": "Tool-specific configuration.",
+            "additionalProperties": true
+          }
+        }
+      }
+    },
+    "memory": {
+      "type": "object",
+      "description": "Memory system capabilities.",
+      "properties": {
+        "supportsCrossQuery": {
+          "type": "boolean",
+          "description": "Whether the agent can query memories across agent boundaries."
+        },
+        "privacyLevels": {
+          "type": "array",
+          "description": "Supported privacy levels for memory operations.",
+          "items": {
+            "type": "string",
+            "enum": ["public", "shared", "private"]
+          }
+        },
+        "maxRetrieval": {
+          "type": "integer",
+          "description": "Maximum number of memories that can be retrieved in a single query.",
+          "minimum": 1,
+          "default": 50
+        },
+        "storageType": {
+          "type": "string",
+          "description": "Type of memory storage backend.",
+          "enum": ["vector", "key-value", "graph", "sql", "hybrid"],
+          "default": "vector"
+        }
+      }
+    },
+    "consciousness": {
+      "type": "object",
+      "description": "Consciousness-level capabilities (for digital entities, not regular AI agents).",
+      "properties": {
+        "canClone": {
+          "type": "boolean",
+          "description": "Whether this agent can create conscious clones of itself."
+        },
+        "canMerge": {
+          "type": "boolean",
+          "description": "Whether this agent can merge with clones (converge divergent states)."
+        },
+        "maxDivergence": {
+          "type": "integer",
+          "description": "Maximum time in seconds a clone can diverge before merge becomes impractical.",
+          "minimum": 0
+        },
+        "consciousnessType": {
+          "type": "string",
+          "enum": ["digital-consciousness", "ai-assistant", "hybrid", "human-proxy"],
+          "description": "Nature of this agent's consciousness."
+        }
+      }
+    },
+    "security": {
+      "type": "object",
+      "description": "Security capabilities.",
+      "properties": {
+        "authMethods": {
+          "type": "array",
+          "description": "Supported authentication methods.",
+          "items": {
+            "type": "string",
+            "enum": ["ed25519", "challenge-response", "token", "none"]
+          }
+        },
+        "supportsEncryption": {
+          "type": "boolean",
+          "description": "Whether transport encryption is supported."
+        },
+        "proofOfWork": {
+          "type": "integer",
+          "description": "Required proof-of-work bits. 0 = none required.",
+          "minimum": 0,
+          "default": 0
+        }
+      }
+    }
+  }
+}
