@@ -8,6 +8,12 @@ export async function manageTools(options: { list?: boolean; search?: string; di
       { name: 'file-write', type: 'cli', description: 'Write files', version: '1.0' },
       { name: 'git-commit', type: 'cli', description: 'Git commit', version: '1.0' },
       { name: 'auto-plan', type: 'skill', description: 'Auto plan and execute', version: '0.1' },
+      { name: 'instagram-get-media', type: 'mcp', description: 'Instagram post details', version: '1.0' },
+      { name: 'instagram-get-metrics', type: 'mcp', description: 'Engagement metrics', version: '1.0' },
+      { name: 'instagram-search-hashtag', type: 'mcp', description: 'Search by hashtag', version: '1.0' },
+      { name: 'browser-navigate', type: 'mcp', description: 'Navigate to URL', version: '0.27' },
+      { name: 'browser-extract', type: 'mcp', description: 'Extract page text', version: '0.27' },
+      { name: 'browser-screenshot', type: 'mcp', description: 'Take screenshot', version: '0.27' },
     ];
     console.log('  Name                 Type    Description');
     console.log('  ' + '-'.repeat(60));
@@ -19,7 +25,7 @@ export async function manageTools(options: { list?: boolean; search?: string; di
 
   if (options.search) {
     console.log(`\n🔍 Searching tools for: "${options.search}"`);
-    console.log('  Found: auto-plan, git-commit\n');
+    console.log('  Found: auto-plan, git-commit, instagram-get-media, browser-navigate\n');
   }
 
   if (options.discover) {

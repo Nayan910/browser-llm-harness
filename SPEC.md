@@ -172,6 +172,48 @@ An OpenCode-compatible CLI:
 - Extends with custom commands
 - WebSocket connection to browser UI
 
+### 12. Instagram MCP Server (`packages/instagram-mcp`)
+
+A full-featured Instagram Graph API integration as an MCP server:
+
+- **7 MCP Tools**: `get_media`, `list_media`, `get_comments`, `get_metrics`, `search_hashtag`, `get_profile`, `analyze_post_url`
+- **Rate Limiting**: 200 API calls/hour, 25 posts/day with exponential backoff
+- **Caching**: 5-minute TTL with persistent file storage
+- **Instagram Graph API v19.0** via Facebook's Graph API
+- **MCP stdio transport** with JSON-RPC 2.0 protocol
+- **Config loading** from environment, `.env`, or `config/default.env`
+- **Webhook support** for real-time updates
+
+Configuration:
+```env
+INSTAGRAM_ACCESS_TOKEN=your_token
+FACEBOOK_APP_ID=your_app_id
+FACEBOOK_APP_SECRET=your_app_secret
+INSTAGRAM_BUSINESS_ACCOUNT_ID=your_business_id
+INSTAGRAM_API_VERSION=v19.0
+```
+
+### 13. Agent Browser Integration (`packages/agent-browser`)
+
+Headless browser automation powered by `agent-browser` v0.27.0:
+
+- **8 Browser MCP Tools**: `navigate`, `click`, `type`, `extract`, `screenshot`, `session_start`, `session_end`, `doctor`
+- **Session Lifecycle**: Start → actions → end, with full action history
+- **Headless Chromium** with configurable viewport, timeout, error handling
+- **Web Scraping**: Extract text, take screenshots, fill forms
+- **Installation Verification**: `browser_doctor` tool runs `agent-browser doctor`
+
+Configuration:
+```json
+{
+  "headed": false,
+  "profile": "./browser-data",
+  "userAgent": "agent-browser/1.0",
+  "defaultTimeout": 25000,
+  "viewport": { "width": 1280, "height": 720 }
+}
+```
+
 ---
 
 ## Development Roadmap
@@ -202,6 +244,8 @@ An OpenCode-compatible CLI:
 - [ ] Session continuity
 - [ ] Browser UI with full visualization
 - [ ] CLI harness
+- [x] Instagram MCP server (7 tools, rate limiting, caching)
+- [x] Agent browser integration (8 tools, headless Chromium)
 
 ---
 
@@ -217,6 +261,8 @@ An OpenCode-compatible CLI:
 - **LLM SDK**: Vercel AI SDK (for multi-provider support)
 - **State**: Zustand
 - **Persistence**: Drizzle ORM
+- **Instagram**: Instagram Graph API v19.0, MCP stdio transport
+- **Browser**: agent-browser v0.27.0, Headless Chromium
 
 ---
 

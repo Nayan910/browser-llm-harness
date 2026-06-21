@@ -73,6 +73,7 @@ const Sidebar = ({ agents, selectedAgent, onSelectAgent, activeTab, onTabChange 
         <div onClick={() => onTabChange('workflows')} style={tabStyle('workflows')}><WorkflowIcon /> Workflows</div>
         <div onClick={() => onTabChange('tools')} style={tabStyle('tools')}><CogIcon /> Tools</div>
         <div onClick={() => onTabChange('files')} style={tabStyle('files')}><FolderIcon /> Files</div>
+        <div onClick={() => onTabChange('social')} style={tabStyle('social')}>📱 Social</div>
       </div>
 
       {/* Agent list */}
@@ -361,6 +362,26 @@ export default function Home() {
                 </div>
               </div>
 
+              {/* MCP Server Status */}
+              <div style={{ background: '#1e293b', borderRadius: '8px', padding: '12px', border: '1px solid #334155' }}>
+                <div style={{ color: '#9ca3af', fontSize: '12px', fontWeight: 'bold', marginBottom: '8px' }}>MCP SERVERS</div>
+                {[
+                  { name: 'Instagram MCP', status: 'online', version: '1.0.0', tools: 7 },
+                  { name: 'Agent Browser', status: 'online', version: '0.27.0', tools: 8 },
+                  { name: 'File System', status: 'online', version: '1.0.0', tools: 4 },
+                  { name: 'GitHub', status: 'online', version: '1.0.0', tools: 12 },
+                  { name: 'Web Search', status: 'online', version: '1.0.0', tools: 3 },
+                ].map(srv => (
+                  <div key={srv.name} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 0', borderBottom: '1px solid #1e293b', fontSize: '12px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#22c55e', boxShadow: '0 0 6px rgba(34,197,94,0.4)' }} />
+                      <span style={{ color: '#d1d5db' }}>{srv.name}</span>
+                    </div>
+                    <span style={{ color: '#6b7280' }}>{srv.tools} tools</span>
+                  </div>
+                ))}
+              </div>
+
               {/* Settings button */}
               <button onClick={() => setShowSettings(!showSettings)} style={{ background: '#1e293b', border: '1px solid #334155', borderRadius: '8px', padding: '10px', color: '#9ca3af', cursor: 'pointer', fontSize: '12px' }}>
                 ⚙️ Settings
@@ -416,8 +437,25 @@ export default function Home() {
                 { name: 'mcp-filesystem', type: 'MCP', desc: 'File system MCP server', cat: 'mcp' },
                 { name: 'mcp-github', type: 'MCP', desc: 'GitHub MCP integration', cat: 'mcp' },
                 { name: 'agent-discover', type: 'SKILL', desc: 'Web discovery for new tools', cat: 'agent' },
+                // Instagram Tools
+                { name: 'instagram-get-media', type: 'MCP', desc: 'Get Instagram post details by ID', cat: 'social' },
+                { name: 'instagram-list-media', type: 'MCP', desc: 'List recent Instagram posts', cat: 'social' },
+                { name: 'instagram-get-comments', type: 'MCP', desc: 'Get comments on a post', cat: 'social' },
+                { name: 'instagram-get-metrics', type: 'MCP', desc: 'Get engagement metrics for a post', cat: 'social' },
+                { name: 'instagram-search-hashtag', type: 'MCP', desc: 'Search posts by hashtag', cat: 'social' },
+                { name: 'instagram-get-profile', type: 'MCP', desc: 'Get Instagram business profile', cat: 'social' },
+                { name: 'instagram-analyze-url', type: 'MCP', desc: 'Analyze post from URL', cat: 'social' },
+                // Browser Tools
+                { name: 'browser-navigate', type: 'MCP', desc: 'Navigate headless browser to URL', cat: 'browser' },
+                { name: 'browser-click', type: 'MCP', desc: 'Click element by CSS selector', cat: 'browser' },
+                { name: 'browser-type', type: 'MCP', desc: 'Type text into input field', cat: 'browser' },
+                { name: 'browser-extract', type: 'MCP', desc: 'Extract text from page/element', cat: 'browser' },
+                { name: 'browser-screenshot', type: 'MCP', desc: 'Take page screenshot', cat: 'browser' },
+                { name: 'browser-session', type: 'MCP', desc: 'Manage browser sessions', cat: 'browser' },
+                { name: 'browser-doctor', type: 'MCP', desc: 'Verify browser installation', cat: 'browser' },
+                { name: 'agent-browser', type: 'CLI', desc: 'agent-browser v0.27.0 headless browser', cat: 'browser' },
               ].map(tool => {
-                const colors: Record<string, string> = { MCP: '#8b5cf6', CLI: '#3b82f6', PLUGIN: '#22c55e', HOOK: '#f59e0b', SKILL: '#ec4899', LSP: '#06b6d4' };
+                const colors: Record<string, string> = { MCP: '#8b5cf6', CLI: '#3b82f6', PLUGIN: '#22c55e', HOOK: '#f59e0b', SKILL: '#ec4899', LSP: '#06b6d4', SOCIAL: '#f97316', BROWSER: '#14b8a6' };
                 return (
                   <div key={tool.name} style={{ background: '#1e293b', borderRadius: '8px', padding: '12px', border: '1px solid #334155' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
@@ -468,6 +506,97 @@ export default function Home() {
                   )}
                 </div>
               ))}
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'social' && (
+          <div style={{ flex: 1, padding: '20px', overflowY: 'auto' }}>
+            <h2 style={{ color: 'white', marginBottom: '16px', fontSize: '18px' }}>📱 Social Media Tools</h2>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '16px' }}>
+              {/* Instagram Section */}
+              <div style={{ background: '#1e293b', borderRadius: '8px', padding: '16px', border: '1px solid #334155' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                  <span style={{ fontSize: '24px' }}>📸</span>
+                  <div>
+                    <div style={{ color: 'white', fontWeight: 'bold', fontSize: '15px' }}>Instagram MCP Server</div>
+                    <div style={{ color: '#6b7280', fontSize: '11px' }}>v1.0.0 · Graph API v19.0</div>
+                  </div>
+                  <span style={{ marginLeft: 'auto', background: '#22c55e', color: 'white', padding: '2px 8px', borderRadius: '8px', fontSize: '10px', fontWeight: 'bold' }}>ONLINE</span>
+                </div>
+                <div style={{ color: '#9ca3af', fontSize: '12px', marginBottom: '12px' }}>
+                  Full Instagram Graph API integration. Analyze posts, get metrics, search hashtags, manage comments.
+                </div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+                  {['get_media','list_media','get_comments','get_metrics','search_hashtag','get_profile','analyze_url'].map(t => (
+                    <span key={t} style={{ background: '#0f172a', color: '#f97316', padding: '2px 8px', borderRadius: '8px', fontSize: '10px', border: '1px solid #334155' }}>{t}</span>
+                  ))}
+                </div>
+                <div style={{ marginTop: '12px', padding: '8px', background: '#0f172a', borderRadius: '6px', fontSize: '11px', color: '#6b7280', fontFamily: 'monospace' }}>
+                  INSTAGRAM_ACCESS_TOKEN=***<br/>
+                  INSTAGRAM_BUSINESS_ACCOUNT_ID=***
+                </div>
+              </div>
+              
+              {/* Browser Section */}
+              <div style={{ background: '#1e293b', borderRadius: '8px', padding: '16px', border: '1px solid #334155' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                  <span style={{ fontSize: '24px' }}>🌐</span>
+                  <div>
+                    <div style={{ color: 'white', fontWeight: 'bold', fontSize: '15px' }}>Agent Browser</div>
+                    <div style={{ color: '#6b7280', fontSize: '11px' }}>v0.27.0 · Headless Chromium</div>
+                  </div>
+                  <span style={{ marginLeft: 'auto', background: '#22c55e', color: 'white', padding: '2px 8px', borderRadius: '8px', fontSize: '10px', fontWeight: 'bold' }}>INSTALLED</span>
+                </div>
+                <div style={{ color: '#9ca3af', fontSize: '12px', marginBottom: '12px' }}>
+                  Automated headless browser for web scraping, form filling, screenshots, and UI testing.
+                </div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+                  {['navigate','click','type','extract','screenshot','session','doctor','evaluate'].map(t => (
+                    <span key={t} style={{ background: '#0f172a', color: '#14b8a6', padding: '2px 8px', borderRadius: '8px', fontSize: '10px', border: '1px solid #334155' }}>{t}</span>
+                  ))}
+                </div>
+                <div style={{ marginTop: '12px', padding: '8px', background: '#0f172a', borderRadius: '6px', fontSize: '11px', color: '#6b7280', fontFamily: 'monospace' }}>
+                  $ agent-browser --version<br/>
+                  agent-browser 0.27.0
+                </div>
+              </div>
+
+              {/* Instagram Config section */}
+              <div style={{ background: '#1e293b', borderRadius: '8px', padding: '16px', border: '1px solid #334155' }}>
+                <div style={{ color: 'white', fontWeight: 'bold', fontSize: '15px', marginBottom: '8px' }}>⚙️ Instagram Setup</div>
+                <div style={{ color: '#9ca3af', fontSize: '12px', marginBottom: '12px' }}>
+                  Configure your Instagram Graph API credentials:
+                </div>
+                <div style={{ marginBottom: '8px' }}>
+                  <div style={{ color: '#6b7280', fontSize: '11px', marginBottom: '2px' }}>Access Token</div>
+                  <input value="••••••••••••••••" readOnly style={{ width: '100%', background: '#0f172a', color: '#9ca3af', border: '1px solid #334155', borderRadius: '4px', padding: '6px 8px', fontSize: '11px' }} />
+                </div>
+                <div style={{ marginBottom: '8px' }}>
+                  <div style={{ color: '#6b7280', fontSize: '11px', marginBottom: '2px' }}>Business Account ID</div>
+                  <input value="••••••••••••" readOnly style={{ width: '100%', background: '#0f172a', color: '#9ca3af', border: '1px solid #334155', borderRadius: '4px', padding: '6px 8px', fontSize: '11px' }} />
+                </div>
+                <button style={{ width: '100%', background: '#f97316', color: 'white', border: 'none', borderRadius: '6px', padding: '8px', cursor: 'pointer', fontWeight: 'bold', fontSize: '12px', marginTop: '4px' }}>
+                  Connect Instagram
+                </button>
+              </div>
+
+              {/* Browser Config */}
+              <div style={{ background: '#1e293b', borderRadius: '8px', padding: '16px', border: '1px solid #334155' }}>
+                <div style={{ color: 'white', fontWeight: 'bold', fontSize: '15px', marginBottom: '8px' }}>⚙️ Browser Setup</div>
+                <div style={{ color: '#9ca3af', fontSize: '12px', marginBottom: '12px' }}>
+                  Configure headless browser settings:
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', fontSize: '12px' }}>
+                  <div><div style={{ color: '#6b7280' }}>Headless</div><div style={{ color: '#d1d5db' }}>true</div></div>
+                  <div><div style={{ color: '#6b7280' }}>Timeout</div><div style={{ color: '#d1d5db' }}>25s</div></div>
+                  <div><div style={{ color: '#6b7280' }}>Viewport</div><div style={{ color: '#d1d5db' }}>1280x720</div></div>
+                  <div><div style={{ color: '#6b7280' }}>HTTPS Errors</div><div style={{ color: '#d1d5db' }}>Ignore</div></div>
+                </div>
+                <button style={{ width: '100%', background: '#14b8a6', color: 'white', border: 'none', borderRadius: '6px', padding: '8px', cursor: 'pointer', fontWeight: 'bold', fontSize: '12px', marginTop: '12px' }}>
+                  Open Browser Session
+                </button>
+              </div>
             </div>
           </div>
         )}
